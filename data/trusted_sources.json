@@ -1,5 +1,26 @@
-[
-"Reuters",
-"BBC",
-"Associated Press"
-]
+{
+  "trusted_sources": [
+    "reuters.com",
+    "bbc.com",
+    "bbc.co.uk",
+    "cnn.com",
+    "nytimes.com",
+    "theguardian.com",
+    "washingtonpost.com",
+    "forbes.com",
+    "bloomberg.com",
+    "nasa.gov",
+    "who.int",
+    "nature.com",
+    "science.org",
+    "economist.com",
+    "aljazeera.com",
+    "cnbc.com",
+    "theverge.com",
+    "techcrunch.com",
+    "wsj.com",
+    "apnews.com",
+    "nbcnews.com",
+    "abcnews.go.com"
+  ]
+}

@@ -4,15 +4,12 @@ import pandas as pd
 import time
 import matplotlib.pyplot as plt
 
-# ---------------- PAGE CONFIG ---------------- #
-
 st.set_page_config(
     page_title="Fake News Detection and Verification Tool",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# ---------------- PROFESSIONAL CSS ---------------- #
 
 st.markdown("""
 <style>
@@ -93,11 +90,9 @@ font-weight:600;
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------- BACKEND API ---------------- #
 
 API = "http://127.0.0.1:5000/analyze"
 
-# ---------------- SESSION DATA ---------------- #
 
 if 'history' not in st.session_state:
     st.session_state.history = []
@@ -105,7 +100,6 @@ if 'history' not in st.session_state:
 if 'stats' not in st.session_state:
     st.session_state.stats = {"fake":0,"real":0,"claims":0}
 
-# ---------------- SIDEBAR ---------------- #
 
 with st.sidebar:
 
@@ -130,7 +124,6 @@ with st.sidebar:
     st.caption("Explainability: Rule-based")
     st.caption("Deployment: Docker Container")
 
-# ---------------- ANALYZE PAGE ---------------- #
 
 def show_analyze():
 
@@ -177,16 +170,12 @@ def show_analyze():
                     suspicious = res["suspicious_phrases"]
                     trusted = res["trusted_source"]
 
-                    # ----- UPDATE STATS -----
-
                     if label.upper()=="FAKE":
                         st.session_state.stats["fake"]+=1
                     else:
                         st.session_state.stats["real"]+=1
 
                     st.session_state.stats["claims"]+=len(suspicious)
-
-                    # ----- SAVE HISTORY -----
 
                     st.session_state.history.append({
                         "Time":time.strftime("%H:%M:%S"),
@@ -196,7 +185,6 @@ def show_analyze():
                         "Text":text[:80]+"..."
                     })
 
-                    # ----- RESULT -----
 
                     st.markdown("### Analysis Result")
 
@@ -209,15 +197,11 @@ def show_analyze():
 
                     st.caption(f"Processing Time: {proc_time} seconds")
 
-                    # ----- AI EXPLANATION -----
-
                     st.markdown("### AI Explanation")
 
                     if explanation:
                         for e in explanation:
                             st.info(e)
-
-                    # ----- SUSPICIOUS CLAIMS -----
 
                     if suspicious:
 
@@ -233,7 +217,6 @@ def show_analyze():
 
                         st.success("No suspicious phrases detected")
 
-                    # ----- SOURCE TRUST -----
 
                     st.markdown("### Source Credibility")
 
@@ -256,8 +239,6 @@ def show_analyze():
         else:
 
             st.info("Enter article text and click **Run Analysis**")
-
-# ---------------- OVERVIEW PAGE ---------------- #
 
 def show_overview():
 
@@ -284,7 +265,6 @@ def show_overview():
 
         st.bar_chart(chart_data)
 
-        # Pie chart
         fig, ax = plt.subplots()
         chart_data.plot.pie(autopct='%1.1f%%',ax=ax)
         ax.set_ylabel("")
@@ -293,8 +273,6 @@ def show_overview():
     else:
 
         st.info("No analytics available yet")
-
-# ---------------- HISTORY PAGE ---------------- #
 
 def show_history():
 
@@ -328,7 +306,6 @@ def show_history():
 
         st.info("No analysis performed yet")
 
-# ---------------- ROUTER ---------------- #
 
 if page=="🚀 Analyze News":
     show_analyze()

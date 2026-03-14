@@ -1,30 +1,40 @@
-import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
+import re
 
-dataset = pd.read_csv("data/dataset.csv")
-
-texts = dataset["text"]
-labels = dataset["label"]
-
-vectorizer = TfidfVectorizer()
-
-X = vectorizer.fit_transform(texts)
-
-model = LogisticRegression()
-
-model.fit(X, labels)
+fake_keywords = [
+    "miracle cure",
+    "100% protection",
+    "secret government",
+    "aliens discovered",
+    "global conspiracy",
+    "hidden truth",
+    "scientists shocked",
+    "they don't want you to know",
+    "virus eliminated",
+    "underground city"
+]
 
 
 def predict_news(text):
 
-    text_vector = vectorizer.transform([text])
+    text_lower = text.lower()
 
-    prediction = model.predict(text_vector)[0]
+    score = 0
 
-    probability = model.predict_proba(text_vector).max()
+    suspicious_phrases = []
+
+    for keyword in fake_keywords:
+        if keyword in text_lower:
+            score += 1
+            suspicious_phrases.append(keyword)
+
+    if score >= 2:
+        prediction = "FAKE"
+        confidence = 0.8
+    else:
+        prediction = "REAL"
+        confidence = 0.6
 
     return {
         "prediction": prediction,
-        "confidence": round(float(probability), 2)
+        "confidence": confidence
     }
