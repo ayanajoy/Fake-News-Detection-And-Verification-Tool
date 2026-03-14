@@ -1,0 +1,23 @@
+
+1. News Article 
+2. News Detection.
+3. Highlight suspicious phrases
+    Explain suspicious Article
+4. Trusted News Or Not.
+5. Admin Dashboard
+6. Connect With an Docker
+
+app.py (Backend API's)
+Model.py
+explainability.py
+source_manager.py
+
+Dashboard/
+    admin.py
+data/
+    trusted_sources.json
+
+DF
+requirements.txt
+
+REPO : MITLicence
