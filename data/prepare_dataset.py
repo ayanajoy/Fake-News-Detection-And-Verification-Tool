@@ -1,7 +1,19 @@
 import os
 import shutil
 import urllib.request
+import re
 import pandas as pd
+
+def clean_news_text(text):
+    if not isinstance(text, str):
+        return ""
+    # Strip headers like "WASHINGTON (Reuters) - " or "LONDON (Reuters) - " at the start
+    text = re.sub(r'^[A-Z\s,]+ \((Reuters|REUTERS)\) -\s*', '', text)
+    # Strip other standard agency headers or general location headers e.g. "WASHINGTON - "
+    text = re.sub(r'^[A-Z\s,]+ -\s*', '', text)
+    # Strip any leading "(Reuters) -" or "Reuters -"
+    text = re.sub(r'^\s*\(?(Reuters|REUTERS)\)?\s*-\s*', '', text)
+    return text.strip()
 
 # Paths
 DATA_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -47,6 +59,11 @@ try:
     if "text" not in true_df.columns or "text" not in fake_df.columns:
         raise ValueError("Missing 'text' column in one of the downloaded datasets.")
 
+    # Apply text cleaning
+    print("Cleaning text columns (removing headers and formatting artifacts)...")
+    true_df["text"] = true_df["text"].apply(clean_news_text)
+    fake_df["text"] = fake_df["text"].apply(clean_news_text)
+
     # Assign labels
     true_df["label"] = "REAL"
     fake_df["label"] = "FAKE"
@@ -58,6 +75,10 @@ try:
     # Drop any null or empty texts
     true_df = true_df.dropna(subset=["text"])
     fake_df = fake_df.dropna(subset=["text"])
+
+    # Remove rows where cleaning left them empty
+    true_df = true_df[true_df["text"] != ""]
+    fake_df = fake_df[fake_df["text"] != ""]
 
     # 5. Subsample to balanced 10,000 rows (5,000 from each class)
     SAMPLE_SIZE_PER_CLASS = 5000
@@ -78,11 +99,25 @@ try:
     combined_df.to_csv(DATASET_PATH, index=False)
     print("Successfully saved dataset.")
 
-finally:
-    # Clean up temporary downloads
-    print("Cleaning up temporary CSV files...")
-    if os.path.exists(TRUE_TEMP):
-        os.remove(TRUE_TEMP)
-    if os.path.exists(FAKE_TEMP):
-        os.remove(FAKE_TEMP)
-    print("Cleanup complete.")
+    finally:
+        # Delete dataframes and run GC to ensure file handles are released
+        try:
+            if 'true_df' in locals():
+                del true_df
+            if 'fake_df' in locals():
+                del fake_df
+            import gc
+            gc.collect()
+        except Exception:
+            pass
+
+        # Clean up temporary downloads
+        print("Cleaning up temporary CSV files...")
+        for temp_file in [TRUE_TEMP, FAKE_TEMP]:
+            if os.path.exists(temp_file):
+                try:
+                    os.remove(temp_file)
+                    print(f"Successfully removed {os.path.basename(temp_file)}")
+                except Exception as e:
+                    print(f"Warning: Could not remove {os.path.basename(temp_file)}: {e}")
+        print("Cleanup complete.")
